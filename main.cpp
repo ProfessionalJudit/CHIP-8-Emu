@@ -106,7 +106,7 @@ int main(int argc, char const *argv[])
             break;
         case 0x6000:
             // 0x6XNN, X = V register num, NN = value
-            //Assign NN to V[X]
+            // Assign NN to V[X]
             // Get X/register num (opcode >> 8 & 0x000F)
             // Get NN/Value (opcode & 0x00FF)
             V[(opcode >> 8 & 0x000F)] = opcode & 0x00FF;
@@ -114,11 +114,79 @@ int main(int argc, char const *argv[])
             break;
         case 0x7000:
             // 0x7XNN, X = V register num, NN = value
-            //Sum NN to V[X]
+            // Sum NN to V[X]
             // Get X/register num (opcode >> 8 & 0x000F)
             // Get NN/Value (opcode & 0x00FF)
             V[(opcode >> 8 & 0x000F)] += opcode & 0x00FF;
             pc += 2;
+            break;
+        case 0x8000:
+            // 0x0XYN, X = V register num, Y = V register num, N = actual instrucion num
+            // Multiple cases based on the last half byte
+            switch (opcode >> 8 & 0x000F)
+            {
+            case 0x0000:
+                // VX = VY
+                V[opcode >> 8 & 0x000F] = V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0001:
+                // Bitwise or between VX and VY
+                V[opcode >> 8 & 0x000F] = V[opcode >> 8 & 0x000F] | V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0002:
+                // Bitwise and between VX and VY
+                V[opcode >> 8 & 0x000F] = V[opcode >> 8 & 0x000F] & V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0003:
+                // Bitwise xor between VX and VY
+                V[opcode >> 8 & 0x000F] = V[opcode >> 8 & 0x000F] ^ V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0004:
+                // Adds VY to VX, if there is a carry set V[F] to 1
+                if (V[opcode >> 8 & 0x000F] + V[opcode >> 4 & 0x000F] > 0xFF)
+                    V[0xF] = 0x1;
+                else
+                    V[0xF] = 0x0;
+                V[opcode >> 8 & 0x000F] += V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0005:
+                // Subs VY to VX, if there is a carry set V[F] to 1
+                if (V[opcode >> 8 & 0x000F] - V[opcode >> 4 & 0x000F] < 0x0)
+                    V[0xF] = 0x1;
+                else
+                    V[0xF] = 0x0;
+                V[opcode >> 8 & 0x000F] -= V[opcode >> 4 & 0x000F];
+                pc += 2;
+                break;
+            case 0x0006:
+                // Stores the least significant bit of VX in VF and then shifts VX to the right by 1
+                V[0xF] = V[opcode >> 8 & 0x000F] & 0x0001;
+                V[opcode >> 8 & 0x000F] >> 1;
+                pc += 2;
+                break;
+            case 0x0007:
+                // Sets VX to VY - VV, if there is a carry set V[F] to 1
+                if (V[opcode >> 4 & 0x000F] - V[opcode >> 8 & 0x000F] < 0x0)
+                    V[0xF] = 0x1;
+                else
+                    V[0xF] = 0x0;
+                V[opcode >> 8 & 0x000F] = V[opcode >> 4 & 0x000F] - V[opcode >> 8 & 0x000F];
+                pc += 2;
+                break;
+            case 0x000E:
+                // Stores the most significant bit of VX in VF and then shifts VX to the left by 1
+                V[0xF] = V[opcode >> 8 & 0x000F] >> 11 & 0x0001;
+                V[opcode >> 8 & 0x000F] << 1;
+                pc += 2;
+                break;
+            default:
+                break;
+            }
             break;
         default:
             break;
