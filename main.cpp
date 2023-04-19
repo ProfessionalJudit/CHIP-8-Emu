@@ -57,9 +57,7 @@ int main(int argc, char const *argv[])
         {
             terminal = true;
         }
-        
     }
-
 
     // init
     pc = 0x200; // Program counter starts at 0x200
@@ -408,6 +406,12 @@ int main(int argc, char const *argv[])
             {
                 gfx[i] = 0;
             }
+            pc += 2;
+        }
+        if (opcode == 0xEE)
+        {
+            sp--;           // Decrement stack pointer
+            pc = stack[sp]; // Set pc to the sp value
             pc += 2;
         }
 
