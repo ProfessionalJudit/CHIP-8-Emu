@@ -60,7 +60,11 @@ int main(int argc, char const *argv[])
         key[i] = 0;
 
     // Reset timers
-
+    delay_timer = 0;
+    sound_timer = 0;
+    // load rom
+    // for (int i = 0; i < bufferSize; ++i)
+    //    memory[i + 512] = buffer[i];
     // For debug purposes
     int count = 0;
     // Set value of 0xFFA
@@ -378,35 +382,43 @@ int main(int argc, char const *argv[])
         default:
             break;
         }
-
-        if (debug)
+        if (delay_timer > 0)
+            --delay_timer;
+        if (sound_timer > 0)
         {
-            std::cout << "Cycle: " << count << "\n";
-            std::cout << "Optcode: " << std::hex << opcode << "\nInstruction: " << (opcode & 0xF000) << "\n";
-            std::cout << "I: " << std::hex << I << "\n";
-            std::cout << "sp: " << std::hex << sp << "\n";
-            std::cout << "PC: " << std::hex << pc << "\n\n";
-            short j = 0;
-            for (size_t i = 0; i < 32 * 64; i++)
-            {
-                std::cout << int(gfx[i]);
-                if (j == 64)
-                {
-                    std::cout << "\n";
-                    j = -1;
-                }
-                j++;
-            }
-        }
-        count++;
-        try
-        {
-            system("cls");
-        }
-        catch (const std::exception &e)
-        {
-            system("clear");
+            if (sound_timer == 1)
+                std::cout << "BEEP!\n";
+            --sound_timer;
         }
     }
-    return 0;
+    if (debug)
+    {
+        std::cout << "Cycle: " << count << "\n";
+        std::cout << "Optcode: " << std::hex << opcode << "\nInstruction: " << (opcode & 0xF000) << "\n";
+        std::cout << "I: " << std::hex << I << "\n";
+        std::cout << "sp: " << std::hex << sp << "\n";
+        std::cout << "PC: " << std::hex << pc << "\n\n";
+        short j = 0;
+        for (size_t i = 0; i < 32 * 64; i++)
+        {
+            std::cout << int(gfx[i]);
+            if (j == 64)
+            {
+                std::cout << "\n";
+                j = -1;
+            }
+            j++;
+        }
+    }
+    count++;
+    try
+    {
+        system("cls");
+    }
+    catch (const std::exception &e)
+    {
+        system("clear");
+    }
+}
+return 0;
 }
