@@ -48,12 +48,18 @@ unsigned char chip8_fontset[80] =
 };
 int main(int argc, char const *argv[])
 {
-    //Arguments
-    for (size_t i = 0; i < argc ; i++)
+    // Arguments
+    std::cout << argc;
+    if (argc > 1 && std::string(argv[1]) == "debug")
     {
-        std::cout << argv[i];
+        debug = true;
+        if (argc > 2 && std::string(argv[2]) == "terminal")
+        {
+            terminal = true;
+        }
+        
     }
-    
+
 
     // init
     pc = 0x200; // Program counter starts at 0x200
@@ -169,7 +175,7 @@ int main(int argc, char const *argv[])
             // Assign NN to V[X]
             // Get X/register num (opcode >> 8 & 0x000F)
             // Get NN/Value (opcode & 0x00FF)
-            //std::cout << (opcode & 0x00FF) << "\n";
+            // std::cout << (opcode & 0x00FF) << "\n";
             V[(opcode >> 8 & 0x000F)] = opcode & 0x00FF;
             pc += 2;
             break;
@@ -299,8 +305,8 @@ int main(int argc, char const *argv[])
                         if (gfx[(x + xline + ((y + yline) * 64))] == 1)
                             // If there is colission, VF to 1
                             V[0xF] = 1;
-                        gfx[x + xline + ((y + yline) * 64)] ^=1;
-                    }  
+                        gfx[x + xline + ((y + yline) * 64)] ^= 1;
+                    }
                 }
             }
             pc += 2;
@@ -397,7 +403,7 @@ int main(int argc, char const *argv[])
         // Clear screen
         if (opcode == 0xE0)
         {
-            //std::cout << "Screen cleared\n";
+            // std::cout << "Screen cleared\n";
             for (size_t i = 0; i < 64 * 32; i++)
             {
                 gfx[i] = 0;
@@ -419,13 +425,13 @@ int main(int argc, char const *argv[])
             std::cout << "Opcode: " << std::hex << opcode << "\n";
             std::cout << "I: " << std::hex << I << "\n";
             std::cout << "PC: " << std::hex << pc << "\n\n";
-            std::cout << "\nRegisters: ";  
+            std::cout << "\nRegisters: ";
             /**/
             for (size_t i = 0; i < 16; i++)
             {
                 std::cout << std::hex << int(V[i]) << " | ";
-            }            
-            std::cout << "\n";  
+            }
+            std::cout << "\n";
             /**/
             short j = 0;
             count++;
