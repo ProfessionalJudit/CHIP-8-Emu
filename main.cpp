@@ -1,7 +1,9 @@
 #include <iostream> //For debug
 #include <cstdlib>
 #include <stdlib.h>
-bool debug = true;
+#include <fstream>
+bool debug = false;
+bool terminal = false;
 // Define Vars that will hold the memory and registers
 // To "emulate" the memory we'll use unsigned chars,
 // An unsigned char end up being a 1 byte unsigned integer, so it is exactly what is needed
@@ -46,6 +48,13 @@ unsigned char chip8_fontset[80] =
 };
 int main(int argc, char const *argv[])
 {
+    //Arguments
+    for (size_t i = 0; i < argc ; i++)
+    {
+        std::cout << argv[i];
+    }
+    
+
     // init
     pc = 0x200; // Program counter starts at 0x200
     opcode = 0; // Reset current opcode
@@ -63,8 +72,19 @@ int main(int argc, char const *argv[])
     delay_timer = 0;
     sound_timer = 0;
     // load rom
-    // for (int i = 0; i < bufferSize; ++i)
-    //    memory[i + 512] = buffer[i];
+    // Open the rom in binary mode, pass each byte into "c", then writr c into memory[i]
+    std::ifstream f("rom.ch8", std::ios::binary | std::ios::in);
+    char c;
+    int j = 512;
+    for (int i = 0x200; f.get(c); i++)
+    {
+        if (j >= 4096)
+        {
+            return 1; // file size too big memory space over so exit
+        }
+        memory[i] = (uint8_t)c;
+        j++;
+    }
     // For debug purposes
     int count = 0;
     // Set value of 0xFFA
@@ -112,15 +132,6 @@ int main(int argc, char const *argv[])
                 pc = stack[sp]; // Set pc to the sp value
                 pc += 2;
                 break;
-            // Clear screen
-            case 0x0E0:
-                for (size_t i = 0; i < 64 * 32; i++)
-                {
-                    gfx[i] = 0;
-                }
-
-                pc += 2;
-                break;
             }
             break;
         // Equality contitional
@@ -158,6 +169,7 @@ int main(int argc, char const *argv[])
             // Assign NN to V[X]
             // Get X/register num (opcode >> 8 & 0x000F)
             // Get NN/Value (opcode & 0x00FF)
+            //std::cout << (opcode & 0x00FF) << "\n";
             V[(opcode >> 8 & 0x000F)] = opcode & 0x00FF;
             pc += 2;
             break;
@@ -287,14 +299,13 @@ int main(int argc, char const *argv[])
                         if (gfx[(x + xline + ((y + yline) * 64))] == 1)
                             // If there is colission, VF to 1
                             V[0xF] = 1;
-                        gfx[x + xline + ((y + yline) * 64)];
-                    }
+                        gfx[x + xline + ((y + yline) * 64)] ^=1;
+                    }  
                 }
             }
             pc += 2;
         }
         break;
-
         case 0xE000:
             // Check key presses
             switch (opcode & 0x00FF)
@@ -379,9 +390,21 @@ int main(int argc, char const *argv[])
                 pc += 2;
                 break;
             }
+
         default:
             break;
         }
+        // Clear screen
+        if (opcode == 0xE0)
+        {
+            //std::cout << "Screen cleared\n";
+            for (size_t i = 0; i < 64 * 32; i++)
+            {
+                gfx[i] = 0;
+            }
+            pc += 2;
+        }
+
         if (delay_timer > 0)
             --delay_timer;
         if (sound_timer > 0)
@@ -390,35 +413,45 @@ int main(int argc, char const *argv[])
                 std::cout << "BEEP!\n";
             --sound_timer;
         }
-    }
-    if (debug)
-    {
-        std::cout << "Cycle: " << count << "\n";
-        std::cout << "Optcode: " << std::hex << opcode << "\nInstruction: " << (opcode & 0xF000) << "\n";
-        std::cout << "I: " << std::hex << I << "\n";
-        std::cout << "sp: " << std::hex << sp << "\n";
-        std::cout << "PC: " << std::hex << pc << "\n\n";
-        short j = 0;
-        for (size_t i = 0; i < 32 * 64; i++)
+        if (debug)
         {
-            std::cout << int(gfx[i]);
-            if (j == 64)
+            std::cout << "Cycle: " << count << "\n";
+            std::cout << "Opcode: " << std::hex << opcode << "\n";
+            std::cout << "I: " << std::hex << I << "\n";
+            std::cout << "PC: " << std::hex << pc << "\n\n";
+            std::cout << "\nRegisters: ";  
+            /**/
+            for (size_t i = 0; i < 16; i++)
             {
-                std::cout << "\n";
-                j = -1;
+                std::cout << std::hex << int(V[i]) << " | ";
+            }            
+            std::cout << "\n";  
+            /**/
+            short j = 0;
+            count++;
+            if (terminal)
+            {
+                for (size_t i = 0; i < 32 * 64; i++)
+                {
+                    std::cout << +gfx[i];
+                    if (j == 64)
+                    {
+                        std::cout << "\n";
+                        j = -1;
+                    }
+                    j++;
+                }
+                try
+                {
+                    system("cls");
+                }
+                catch (const std::exception &e)
+                {
+                    system("clear");
+                }
             }
-            j++;
         }
     }
-    count++;
-    try
-    {
-        system("cls");
-    }
-    catch (const std::exception &e)
-    {
-        system("clear");
-    }
-}
-return 0;
+
+    return 0;
 }
