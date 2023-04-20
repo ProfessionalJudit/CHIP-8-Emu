@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
     }
 
     // init
-    
+
     pc = 0x200; // Program counter starts at 0x200
     opcode = 0; // Reset current opcode
     I = 0;      // Reset index register
@@ -307,7 +307,6 @@ int main(int argc, char const *argv[])
                         gfx[x + xline + ((y + yline) * 64)] ^= 1;
                     }
                 }
-                
             }
             pc += 2;
         }
@@ -389,20 +388,15 @@ int main(int argc, char const *argv[])
                 break;
             case 0x0065:
                 // Stores memory in regiters
-                {
-                    unsigned short j = 1;
-                    for (size_t i = 0; i <= opcode >> 8 & 0x000F; i++)
-                    {
-                        V[i] = memory[I + j];
-                        j++;
-                    }
-                }
+                for (int i = 0; i < 16; ++i)
+                    V[i] = memory[I + i];
                 pc += 2;
                 break;
             }
-
+            break;
         default:
-            std::cout << "\nUnknown Opcode";
+            std::cout << "\nUnknown Opcode " << std::hex << opcode;
+            std::cout << "\nSubOpcode: " << (opcode & 0x00FF);
             break;
         }
         // Clear screen
@@ -432,11 +426,11 @@ int main(int argc, char const *argv[])
         }
         if (debug)
         {
-            std::cout << "Cycle: " << count << "\n";
+            std::cout << "\nCycle: " << count << "\n";
             std::cout << "Opcode: " << std::hex << opcode << "\n";
             std::cout << "I: " << std::hex << I << "\n";
-            std::cout << "PC: " << std::hex << pc << "\n\n";
-            std::cout << "\nRegisters: ";
+            std::cout << "PC: " << std::hex << pc << "\n";
+            std::cout << "Registers: ";
             /**/
             for (size_t i = 0; i < 16; i++)
             {
@@ -459,7 +453,7 @@ int main(int argc, char const *argv[])
                     {
                         toPrint += ' ';
                     }
-                    
+
                     if (j == 64)
                     {
                         toPrint += '\n';
