@@ -396,7 +396,6 @@ int main(int argc, char const *argv[])
             break;
         default:
             std::cout << "\nUnknown Opcode " << std::hex << opcode;
-            std::cout << "\nSubOpcode: " << (opcode & 0x00FF);
             break;
         }
         // Clear screen
