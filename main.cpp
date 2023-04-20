@@ -293,7 +293,7 @@ int main(int argc, char const *argv[])
                     // each individual bit
                     //  0x80 = 1000 0000
                     // If we shift one by one we can compare each bit
-                    if (pixel & (0x80 >> xline) != 0)
+                    if ((pixel & (0x80 >> xline)) != 0)
                     {
                         // if its not 0, we check for colision, and draw it
                         // x + line = x coodrd, y + yline * 64, is the y coord (y + yline is the row number,
@@ -306,6 +306,7 @@ int main(int argc, char const *argv[])
                         gfx[x + xline + ((y + yline) * 64)] ^= 1;
                     }
                 }
+                
             }
             pc += 2;
         }
@@ -353,12 +354,16 @@ int main(int argc, char const *argv[])
                 break;
             case 0x001E:
                 // Adds VX to I. VF is not affected
+                if (I + V[(opcode & 0x0F00) >> 8] > 0xFFF) // VF is set to 1 when range overflow (I+VX>0xFFF), and 0 when there isn't.
+                    V[0xF] = 1;
+                else
+                    V[0xF] = 0;
                 I += V[opcode >> 8 & 0x000F];
                 pc += 2;
                 break;
             case 0x0029:
                 // Sets I to the location of the characcter in vx
-                I = memory[V[opcode >> 8 & 0x000F]];
+                I = memory[V[opcode >> 8 & 0x000F]] * 0x5;
                 pc += 2;
                 break;
             case 0x0033:
@@ -378,7 +383,7 @@ int main(int argc, char const *argv[])
                         j++;
                     }
                 }
-
+                I += ((opcode & 0x0F00) >> 8) + 1;
                 pc += 2;
                 break;
             case 0x0065:
@@ -396,6 +401,7 @@ int main(int argc, char const *argv[])
             }
 
         default:
+            std::cout << "\nUnknown Opcode";
             break;
         }
         // Clear screen
@@ -443,11 +449,19 @@ int main(int argc, char const *argv[])
             {
                 for (size_t i = 0; i < 32 * 64; i++)
                 {
-                    std::cout << +gfx[i];
+                    if (gfx[i] != 0)
+                    {
+                        std::cout << "#";
+                    }
+                    else
+                    {
+                        std::cout << " ";
+                    }
+                    
                     if (j == 64)
                     {
                         std::cout << "\n";
-                        j = -1;
+                        j = 0;
                     }
                     j++;
                 }
