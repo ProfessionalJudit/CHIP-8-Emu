@@ -60,6 +60,7 @@ int main(int argc, char const *argv[])
     }
 
     // init
+    
     pc = 0x200; // Program counter starts at 0x200
     opcode = 0; // Reset current opcode
     I = 0;      // Reset index register
@@ -77,7 +78,7 @@ int main(int argc, char const *argv[])
     sound_timer = 0;
     // load rom
     // Open the rom in binary mode, pass each byte into "c", then writr c into memory[i]
-    std::ifstream f("rom.ch8", std::ios::binary | std::ios::in);
+    std::ifstream f("test.ch8", std::ios::binary | std::ios::in);
     char c;
     int j = 512;
     for (int i = 0x200; f.get(c); i++)
@@ -447,24 +448,26 @@ int main(int argc, char const *argv[])
             count++;
             if (terminal)
             {
+                std::string toPrint = "";
                 for (size_t i = 0; i < 32 * 64; i++)
                 {
                     if (gfx[i] != 0)
                     {
-                        std::cout << "#";
+                        toPrint += '#';
                     }
                     else
                     {
-                        std::cout << " ";
+                        toPrint += ' ';
                     }
                     
                     if (j == 64)
                     {
-                        std::cout << "\n";
+                        toPrint += '\n';
                         j = 0;
                     }
                     j++;
                 }
+                std::cout << toPrint;
                 try
                 {
                     system("cls");
