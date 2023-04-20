@@ -10,4 +10,4 @@ TODO:
 * Graphics and GUI
 * Rom selecting
 * Audio
-* Optimization (Better printing the screen into terminal, get rid of hummongus switch statement)
+* Optimization (Get rid of hummongus switch statement)
