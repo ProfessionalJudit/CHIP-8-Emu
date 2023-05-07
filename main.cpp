@@ -482,6 +482,106 @@ int main(int argc, char const *argv[])
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Num1)
+                {
+                    key[0] = 1;
+                }else{
+                    key[0] = 0;
+                }
+                if (event.key.code == sf::Keyboard::Num2)
+                {
+                    key[1] = 1;
+                }else{
+                    key[1] = 0;
+                }
+                if (event.key.code == sf::Keyboard::Num3)
+                {
+                    key[2] = 1;
+                }else{
+                    key[2] = 0;
+                }
+                if (event.key.code == sf::Keyboard::Num4)
+                {
+                    key[3] = 1;
+                }else{
+                    key[3] = 0;
+                }
+                if (event.key.code == sf::Keyboard::Q)
+                {
+                    key[4] = 1;
+                }else{
+                    key[4] = 0;
+                }
+                if (event.key.code == sf::Keyboard::W)
+                {
+                    key[5] = 1;
+                }else{
+                    key[5] = 0;
+                }
+                if (event.key.code == sf::Keyboard::E)
+                {
+                    key[6] = 1;
+                }else{
+                    key[6] = 0;
+                }
+                if (event.key.code == sf::Keyboard::R)
+                {
+                    key[7] = 1;
+                }else{
+                    key[7] = 0;
+                }
+                if (event.key.code == sf::Keyboard::A)
+                {
+                    key[8] = 1;
+                }else{
+                    key[8] = 0;
+                }
+                if (event.key.code == sf::Keyboard::S)
+                {
+                    key[9] = 1;
+                }else{
+                    key[9] = 0;
+                }
+                if (event.key.code == sf::Keyboard::D)
+                {
+                    key[10] = 1;
+                }else{
+                    key[10] = 0;
+                }
+                if (event.key.code == sf::Keyboard::F)
+                {
+                    key[11] = 1;
+                }else{
+                    key[11] = 0;
+                }
+                if (event.key.code == sf::Keyboard::Z)
+                {
+                    key[12] = 1;
+                }else{
+                    key[12] = 0;
+                }
+                if (event.key.code == sf::Keyboard::X)
+                {
+                    key[13] = 1;
+                }else{
+                    key[13] = 0;
+                }
+                if (event.key.code == sf::Keyboard::C)
+                {
+                    key[14] = 1;
+                }else{
+                    key[14] = 0;
+                }
+                if (event.key.code == sf::Keyboard::V)
+                {
+                    key[15] = 1;
+                }else{
+                    key[15] = 0;
+                }
+            }
+            
         }
         window.clear(sf::Color::Black);
         //----
