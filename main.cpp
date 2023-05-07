@@ -2,6 +2,9 @@
 #include <cstdlib>
 #include <stdlib.h>
 #include <fstream>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+
 bool debug = false;
 bool terminal = false;
 // Define Vars that will hold the memory and registers
@@ -60,6 +63,7 @@ int main(int argc, char const *argv[])
     }
 
     // init
+    sf::RenderWindow window(sf::VideoMode(640, 320), "Chip-8 Emu"); // SFML
 
     pc = 0x200; // Program counter starts at 0x200
     opcode = 0; // Reset current opcode
@@ -437,11 +441,12 @@ int main(int argc, char const *argv[])
             }
             std::cout << "\n";
             /**/
-            short j = 0;
+
             count++;
             if (terminal)
             {
                 std::string toPrint = "";
+                short j = 0;
                 for (size_t i = 0; i < 32 * 64; i++)
                 {
                     if (gfx[i] != 0)
@@ -471,6 +476,36 @@ int main(int argc, char const *argv[])
                 }
             }
         }
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+        window.clear(sf::Color::Black);
+        //----
+        int x = 0;
+        int y = 0;
+        
+        for (size_t i = 0; i < 32 * 64; i++)
+        {
+            if (gfx[i] != 0)
+            {
+                sf::RectangleShape rectangle(sf::Vector2f(10.f, 10.f));
+                rectangle.setPosition(x, y);
+                window.draw(rectangle);
+            }
+            x += 10;
+            if (x == 640)
+            {
+                x = 0;
+                y += 10;
+            }
+            
+        }
+        //----
+        window.display();
     }
 
     return 0;
